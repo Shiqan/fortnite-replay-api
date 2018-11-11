@@ -1,0 +1,24 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+flask = "*"
+fortnite-replay-reader = "*"
+flask-sqlalchemy = "*"
+flask-cors = "*"
+flask-migrate = "*"
+sqlalchemy = "*"
+gunicorn = "*"
+"psycopg2" = "*"
+
+[dev-packages]
+pylint = "*"
+"autopep8" = "*"
+rope = "*"
+pytest = "*"
+pylint-flask = "*"
+
+[requires]
+python_version = "3.7"

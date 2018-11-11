@@ -1,0 +1,25 @@
+import os
+
+POSTGRES_USER = os.environ.get('POSTGRES_USER')
+POSTGRES_PASSWORD = os.environ.get('POSTGRES_PASSWORD')
+POSTGRES_PORT = os.environ.get('POSTGRES_PORT')
+DATABASE_URL = f'postgres://{POSTGRES_USER}:{POSTGRES_PASSWORD}@postgres:{POSTGRES_PASSWORD}/fortnite'
+
+
+class BaseConfig:
+    """ Base configuration """
+    DEBUG = False
+    TESTING = False
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    MAX_CONTENT_LENGTH = 16 * 1024 * 1024
+
+class DevelopmentConfig(BaseConfig):
+    """ Development configuration """
+    DEBUG = True
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = DATABASE_URL
+
+
+class ProductionConfig(BaseConfig):
+    """ Production configuration """
+    SQLALCHEMY_DATABASE_URI = DATABASE_URL
