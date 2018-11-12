@@ -4,6 +4,7 @@ from flask_script import Manager
 from project.app import create_app, db
 from project.api.models import Replay
 
+app = create_app()
 migrate = Migrate(app, db)
 manager = Manager(app)
 

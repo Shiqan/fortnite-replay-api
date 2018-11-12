@@ -1,10 +1,6 @@
 import os
 
-POSTGRES_USER = os.environ.get('POSTGRES_USER')
-POSTGRES_PASSWORD = os.environ.get('POSTGRES_PASSWORD')
-POSTGRES_PORT = os.environ.get('POSTGRES_PORT')
-DATABASE_URL = f'postgres://{POSTGRES_USER}:{POSTGRES_PASSWORD}@postgres:{POSTGRES_PASSWORD}/fortnite'
-
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
 class BaseConfig:
     """ Base configuration """
