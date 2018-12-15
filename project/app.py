@@ -10,6 +10,10 @@ from flask_migrate import Migrate
 
 from project.json_encoder import AlchemySerializer
 
+    
+db = SQLAlchemy()
+migrate = Migrate()
+
 def create_app():
 
     # instantiate the app
@@ -34,11 +38,8 @@ def create_app():
     app.register_blueprint(replay_blueprint)
 
     return app
-    
-db = SQLAlchemy()
-migrate = Migrate()
-app = create_app()
 
+app = create_app()
 
 if __name__ == '__main__':
     app.run()
