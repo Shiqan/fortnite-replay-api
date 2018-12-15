@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from project import db
+from project.app import db
 from project.api.models import Replay
 
 class Storage:
