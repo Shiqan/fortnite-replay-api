@@ -72,7 +72,7 @@ def all_replays():
     return jsonify(response_object)
 
 
-@replay_blueprint.route('/replay/ping/', methods=['GET'])
+@replay_blueprint.route('/ping/', methods=['GET'])
 def ping():
     return jsonify({
         'status': 'success',
