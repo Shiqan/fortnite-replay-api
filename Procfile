@@ -1,1 +1,1 @@
-web: gunicorn app:app --keep-alive 60
+web: gunicorn --chdir project app:app --keep-alive 60
