@@ -14,14 +14,14 @@ from project.api.logging import logger
 replay_blueprint = Blueprint('replay', __name__)
 
 
-@replay_blueprint.route('/upload/', methods=['POST'])
+@replay_blueprint.route('/replay/upload/', methods=['POST'])
 def parse_replay():
     logger.info('parse_replay()')
     response_object = {
         'status': 'success',
         'container_id': platform.uname()[1]
     }
-    
+
     f = request.files['data_file']
     username = request.form.get('username', None)
     if not f:
@@ -42,32 +42,37 @@ def parse_replay():
 
 @replay_blueprint.route('/replay/<username>/', methods=['GET'])
 def all_replays_from(username):
-    logger.info(f'all_replays_from({username})')
-    response_object = {
-        'status': 'success',
-        'container_id': platform.uname()[1]
-    }
-    
-    replays = [replay for replay in db.get_all_replays_from(username)]
+    if not username:
+        response_object['message'] = 'No username provided!'
+        response_object['status'] = 'failed'
+    else:
+        logger.info(f'all_replays_from({username})')
+        response_object = {
+            'status': 'success',
+            'container_id': platform.uname()[1]
+        }
 
-    response_object['replays'] = replays
+        replays = [replay for replay in db.get_all_replays_from(username)]
+
+        response_object['replays'] = replays
     return jsonify(response_object)
 
-@replay_blueprint.route('/replays/all/', methods=['GET'])
+
+@replay_blueprint.route('/replays/', methods=['GET'])
 def all_replays():
     logger.info('all_replays()')
     response_object = {
         'status': 'success',
         'container_id': platform.uname()[1]
     }
-    
+
     replays = [replay.to_json() for replay in db.get_all_replays()]
 
     response_object['replays'] = replays
     return jsonify(response_object)
 
 
-@replay_blueprint.route('/replays/ping/', methods=['GET'])
+@replay_blueprint.route('/replay/ping/', methods=['GET'])
 def ping():
     return jsonify({
         'status': 'success',

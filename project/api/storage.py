@@ -14,7 +14,7 @@ class Storage:
             return False
 
     def get_all_replays():
-        return Replay.query.order_by(Replay.created_at.desc()).all()
+        return Replay.query.order_by(Replay.created_at.desc()).limit(5)
 
     def get_all_replays_from(username):
-        return Replay.query.filter_by(username=username).order_by(Replay.created_at.desc()).all()
+        return Replay.query.filter_by(username=username).order_by(Replay.created_at.desc()).limit(5)
