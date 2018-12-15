@@ -3,7 +3,7 @@
 
 from sqlalchemy.sql import func
 
-from project import db
+from project.app import db
 
 
 class Replay(db.Model):
