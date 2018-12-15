@@ -4,7 +4,7 @@
 from project import db
 from project.api.models import Replay
 
-class PostgreStorage:
+class Storage:
     def insert_replay(replay):
         try:
             db.session.add(replay)
