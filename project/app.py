@@ -4,9 +4,9 @@
 import os
 
 from flask import Flask, request
-from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
 
 from project.json_encoder import AlchemySerializer
 
@@ -40,7 +40,7 @@ def create_app():
     return app
 
 
+app = create_app()
 
 if __name__ == '__main__':
-    app = create_app()
     app.run()
