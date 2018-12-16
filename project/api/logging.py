@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import logging
-
+import os
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.ERROR)
+level = os.environ.get('LOG_LEVEL')
+logging.basicConfig(level=level)

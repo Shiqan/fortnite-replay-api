@@ -24,8 +24,8 @@ def parse_replay():
 
     f = request.files['data_file']
     username = request.form.get('username', None)
-    if not f:
-        response_object['message'] = 'No file found!'
+    if not f or not username:
+        response_object['message'] = 'Invalid request!'
         response_object['status'] = 'failed'
     else:
         f.stream.seek(0)
