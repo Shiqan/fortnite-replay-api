@@ -23,7 +23,7 @@ def create_app():
     app.json_encoder = AlchemySerializer
 
     # enable CORS
-    CORS(app)
+    CORS(app, resources={r"/*": {"origins": "*"}})
 
     # set config
     app_settings = os.environ.get('APP_SETTINGS')
