@@ -22,21 +22,19 @@ def parse_replay():
         'container_id': platform.uname()[1]
     }
 
-    f = request.files['data_file']
     username = request.form.get('username', None)
-    if not f or not username:
+    files = request.files.getlist('data_file')
+    if not files or not username:
         response_object['message'] = 'Invalid request!'
         response_object['status'] = 'failed'
     else:
-        f.stream.seek(0)
-        with Reader(f.stream.read()) as replay:
-            response_object['stats'] = replay.stats
-            response_object['team_stats'] = replay.team_stats
-
-            db.insert_replay(
-                Replay(title="unknown", username=username, stats=replay.stats, team_stats=replay.team_stats, eliminations=[i for i in replay.eliminations if i.eliminator == username and not i.knocked]))
-        response_object['message'] = 'Replay added!'
-    logger.debug(response_object)
+        for f in files:
+            f.stream.seek(0)
+            with Reader(f.stream.read()) as replay:
+                db.insert_replay(
+                    Replay(title="unknown", username=username, stats=replay.stats, team_stats=replay.team_stats, eliminations=[i for i in replay.eliminations if i.eliminator == username and not i.knocked]))
+        response_object['message'] = 'Successfully uploaded replays!'
+        response_object['uploaded'] = len(files)
     return jsonify(response_object)
 
 

@@ -4,6 +4,7 @@
 from project.app import db
 from project.api.models import Replay
 
+
 class Storage:
     def insert_replay(replay):
         try:

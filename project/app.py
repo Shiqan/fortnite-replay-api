@@ -10,9 +10,9 @@ from flask_migrate import Migrate
 
 from project.json_encoder import AlchemySerializer
 
-    
 db = SQLAlchemy()
 migrate = Migrate()
+
 
 def create_app():
 
@@ -26,7 +26,7 @@ def create_app():
     CORS(app, resources={r"/*": {"origins": "*"}})
 
     # set config
-    app_settings = os.environ.get('APP_SETTINGS')
+    app_settings = os.environ.get('APP_SETTINGS', default="DevelopmentConfig")
     app.config.from_object(f'project.config.{app_settings}')
 
     # set up extensions
@@ -39,7 +39,8 @@ def create_app():
 
     return app
 
-app = create_app()
+
 
 if __name__ == '__main__':
+    app = create_app()
     app.run()
