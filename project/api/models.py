@@ -1,9 +1,27 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import datetime
+
 from sqlalchemy.sql import func
 
+from dataclasses import dataclass
 from project.app import db
+
+
+@dataclass
+class Filter:
+    username: str
+    start: int
+    length: int
+    search: str
+    startdate: datetime
+    enddate: datetime
+    min_position: int
+    max_position: int
+    min_kills: int
+    max_kills: int
+    win: bool
 
 
 class Replay(db.Model):
