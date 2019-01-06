@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 import platform
 
 from flask import Blueprint, jsonify, request
@@ -30,14 +27,13 @@ def parse_replay():
         for f in files:
             f.stream.seek(0)
             with Reader(f.stream.read()) as replay:
-                db.insert_replay(
-                    Replay(title='unknown', username=username, stats=replay.stats, team_stats=replay.team_stats, eliminations=[i for i in replay.eliminations if i.eliminator == username and not i.knocked]))
+                db.insert_replay(username, replay)
         response_object['message'] = 'Successfully uploaded replays!'
         response_object['uploaded'] = len(files)
     return jsonify(response_object)
 
 
-@replay_blueprint.route('/replay/<username>/', methods=['GET'])
+@replay_blueprint.route('/player/<username>/', methods=['GET'])
 def player_exists(username):
     logger.info(f'player_exists({username})')
     response_object = {
@@ -88,6 +84,23 @@ def all_replays_from():
         response_object['next'] = result.has_next
         response_object['prev'] = result.has_prev
         response_object['replays'] = result.items
+    return jsonify(response_object)
+
+
+@replay_blueprint.route('/replay/<replay_id>/', methods=['GET'])
+def get_replay(replay_id):
+    if not replay_id:
+        response_object['message'] = 'No id provided!'
+        response_object['status'] = 'failed'
+    else:
+        logger.info(f'get_replay() - {replay_id}')
+        response_object = {
+            'status': 'success',
+            'container_id': platform.uname()[1]
+        }
+
+        result = db.get_replay(replay_id)
+        response_object['replay'] = result
     return jsonify(response_object)
 
 

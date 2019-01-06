@@ -1,8 +1,7 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 import datetime
+from collections import Counter
 
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.sql import func
 
 from dataclasses import dataclass
@@ -24,8 +23,28 @@ class Filter:
     win: bool
 
 
+class Elimination(db.Model):
+    __tablename__ = 'elimination'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    replay_id = db.Column(db.Integer, db.ForeignKey(
+        'replay.id', ondelete='CASCADE'))
+
+    eliminator = db.Column(db.String(255), nullable=False)
+    eliminated = db.Column(db.String(255), nullable=False)
+    knocked = db.Column(db.Boolean)
+    weapon_type = db.Column(db.Integer, default=False, nullable=False)
+    time = db.Column(db.DateTime, default=False, nullable=False)
+
+    def __init__(self, replayId, **kwargs):
+        super(Elimination, self).__init__(**kwargs)
+
+    def __json__(self):
+        return ['eliminator', 'eliminated', 'knocked', 'weapon_type', 'time']
+
+
 class Replay(db.Model):
-    __tablename__ = 'replays'
+    __tablename__ = 'replay'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(255), nullable=False)
@@ -48,10 +67,25 @@ class Replay(db.Model):
     position = db.Column(db.Integer, default=False, nullable=False)
     total_players = db.Column(db.Integer, default=False, nullable=False)
 
-    def __init__(self, title, username, stats, team_stats, eliminations):
+    elimination_events = db.relationship("Elimination", backref="Replay")
+
+    @hybrid_property
+    def knocks(self):
+        return len([i for i in self.elimination_events if i.eliminator == self.username and i.knocked])
+
+    @hybrid_property
+    def knocked(self):
+        return len([i for i in self.elimination_events if i.eliminated == self.username and i.knocked])
+
+    @hybrid_property
+    def weapon_usage(self):
+        return Counter(i.weapon_type for i in self.elimination_events)
+
+    def __init__(self, title, username, stats, team_stats):
         self.title = title
         self.username = username
 
+        self.eliminations = stats['eliminations']
         self.accuracy = stats['accuracy']
         self.assists = stats['assists']
         self.weapon_damage = stats['weapon_damage']
@@ -62,11 +96,10 @@ class Replay(db.Model):
         self.materials_gathered = stats['materials_gathered']
         self.materials_used = stats['materials_used']
         self.total_traveled = stats['total_traveled']
-        self.eliminations = len(eliminations)
 
         self.position = team_stats['position']
         self.total_players = team_stats['total_players']
 
     def __json__(self):
-        return ['created_at', 'title', 'username', 'accuracy', 'assists', 'weapon_damage', 'other_damage', 'revives', 'damage_taken',
-                'damage_structures', 'materials_gathered', 'materials_used', 'total_traveled', 'eliminations', 'position', 'total_players']
+        return ['id', 'created_at', 'title', 'username', 'accuracy', 'assists', 'weapon_damage', 'other_damage', 'revives', 'damage_taken',
+                'damage_structures', 'materials_gathered', 'materials_used', 'total_traveled', 'eliminations', 'position', 'total_players', 'knocks', 'knocked', 'weapon_usage']
