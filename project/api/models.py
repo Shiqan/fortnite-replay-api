@@ -81,6 +81,10 @@ class Replay(db.Model):
     def weapon_usage(self):
         return Counter(i.weapon_type for i in self.elimination_events)
 
+    @hybrid_property
+    def winner(self):
+        return self.position == 1
+
     def __init__(self, title, username, stats, team_stats):
         self.title = title
         self.username = username
@@ -102,4 +106,4 @@ class Replay(db.Model):
 
     def __json__(self):
         return ['id', 'created_at', 'title', 'username', 'accuracy', 'assists', 'weapon_damage', 'other_damage', 'revives', 'damage_taken',
-                'damage_structures', 'materials_gathered', 'materials_used', 'total_traveled', 'eliminations', 'position', 'total_players', 'knocks', 'knocked', 'weapon_usage']
+                'damage_structures', 'materials_gathered', 'materials_used', 'total_traveled', 'eliminations', 'position', 'total_players', 'knocks', 'knocked', 'weapon_usage', 'winner']

@@ -47,7 +47,7 @@ class Storage:
         return db.session.query(func.count(Replay.username == username)).scalar()
 
     def get_number_of_wins_from(username):
-        return db.session.query(func.count(and_(Replay.username == username, Replay.position == 1))).scalar()
+        return db.session.query(func.count(and_(Replay.username == username, Replay.winner == True))).scalar()
 
     def get_all_replays_from(search_filter):
         filters = [
@@ -62,7 +62,7 @@ class Storage:
             filters.append(Replay.title.like(search_filter.search+'%'))
 
         if search_filter.win == 'true':
-            filters.append(Replay.position == '1')
+            filters.append(Replay.winner == True)
 
         if search_filter.startdate:
             filters.append(Replay.created_at >= search_filter.startdate)
