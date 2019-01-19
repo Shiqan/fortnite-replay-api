@@ -1,5 +1,3 @@
-import platform
-
 from flask import Blueprint, jsonify, request
 from ray import Reader
 
@@ -14,8 +12,7 @@ replay_blueprint = Blueprint('replay', __name__)
 def parse_replay():
     logger.info('parse_replay()')
     response_object = {
-        'status': 'success',
-        'container_id': platform.uname()[1]
+        'status': 'success'
     }
 
     username = request.form.get('username', None)
@@ -27,9 +24,17 @@ def parse_replay():
         for f in files:
             f.stream.seek(0)
             with Reader(f.stream.read()) as replay:
-                db.insert_replay(username, replay)
-        response_object['message'] = 'Successfully uploaded replays!'
-        response_object['uploaded'] = len(files)
+                if replay.header.guid:
+                    if db.insert_replay(username, replay):
+                        response_object['message'] = 'Successfully uploaded replays!'
+                        response_object['uploaded'] = len(files)
+                    else:
+                        response_object['message'] = 'This replay couldnt be uploaded!'
+                        response_object['status'] = 'failed'
+                else:
+                    response_object['message'] = 'This replay is too old!'
+                    response_object['status'] = 'failed'
+
     return jsonify(response_object)
 
 
@@ -37,8 +42,7 @@ def parse_replay():
 def player_exists(username):
     logger.info(f'player_exists({username})')
     response_object = {
-        'status': 'success',
-        'container_id': platform.uname()[1]
+        'status': 'success'
     }
 
     if not username:
@@ -53,6 +57,10 @@ def player_exists(username):
 
 @replay_blueprint.route('/replay/', methods=['POST'])
 def all_replays_from():
+    response_object = {
+        'status': 'success'
+    }
+
     username = request.form.get('username', None)
     start = request.form.get('start', 1)
     length = request.form.get('length', 10)
@@ -73,10 +81,6 @@ def all_replays_from():
                                min_kills=int(float(min_kills)), max_kills=int(float(max_kills)))
 
         logger.info(f'all_replays_from() - {username}')
-        response_object = {
-            'status': 'success',
-            'container_id': platform.uname()[1]
-        }
 
         result = db.get_all_replays_from(search_filter)
         response_object['total'] = result.total
@@ -89,32 +93,18 @@ def all_replays_from():
 
 @replay_blueprint.route('/replay/<replay_id>/', methods=['GET'])
 def get_replay(replay_id):
+    response_object = {
+        'status': 'success'
+    }
+
     if not replay_id:
         response_object['message'] = 'No id provided!'
         response_object['status'] = 'failed'
     else:
         logger.info(f'get_replay() - {replay_id}')
-        response_object = {
-            'status': 'success',
-            'container_id': platform.uname()[1]
-        }
 
         result = db.get_replay(replay_id)
         response_object['replay'] = result
-    return jsonify(response_object)
-
-
-@replay_blueprint.route('/replays/', methods=['GET'])
-def all_replays():
-    logger.info('all_replays()')
-    response_object = {
-        'status': 'success',
-        'container_id': platform.uname()[1]
-    }
-
-    replays = [replay.to_json() for replay in db.get_all_replays()]
-
-    response_object['replays'] = replays
     return jsonify(response_object)
 
 
@@ -122,6 +112,5 @@ def all_replays():
 def ping():
     return jsonify({
         'status': 'success',
-        'message': 'pong!',
-        'container_id': platform.uname()[1]
+        'message': 'pong!'
     })

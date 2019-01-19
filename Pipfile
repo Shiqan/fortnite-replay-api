@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 flask = "*"
-fortnite-replay-reader = ">=0.1.4"
+fortnite-replay-reader = ">=0.1.6"
 flask-sqlalchemy = "*"
 flask-cors = "*"
 flask-migrate = "*"
