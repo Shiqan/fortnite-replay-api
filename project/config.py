@@ -16,6 +16,12 @@ class DevelopmentConfig(BaseConfig):
     SQLALCHEMY_DATABASE_URI = DATABASE_URL
 
 
+class TestConfig(BaseConfig):
+    """ Test configuration """
+    DEBUG = True
+    TESTING = True
+
+
 class ProductionConfig(BaseConfig):
     """ Production configuration """
     SQLALCHEMY_DATABASE_URI = DATABASE_URL

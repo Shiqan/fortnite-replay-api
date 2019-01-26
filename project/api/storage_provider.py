@@ -6,9 +6,9 @@ from project.api.models import Elimination, Replay, ReplayStats
 from project.app import db
 
 
-class Storage:
-    def insert_replay(username, replay):
-        if (Storage.replay_exists(str(replay.header.guid))):
+class StorageProvider:
+    def insert_replay(self, username, replay):
+        if (self.replay_exists(str(replay.header.guid))):
             logger.info('Replay already exists')
             return False
 
@@ -45,7 +45,7 @@ class Storage:
             return False
         return True
 
-    def replay_exists(guid):
+    def replay_exists(self, guid):
         try:
             return db.session.query(exists().where(Replay.guid == guid)).scalar()
         except Exception:
@@ -53,7 +53,7 @@ class Storage:
                 'Exception while checking if replays exists', exc_info=1)
             return False
 
-    def player_exists(username):
+    def player_exists(self, username):
         try:
             return db.session.query(exists().where(ReplayStats.username == username)).scalar()
         except Exception:
@@ -61,16 +61,16 @@ class Storage:
                 'Exception while checking if player exists', exc_info=1)
             return False
 
-    def get_replay(replay_id):
+    def get_replay(self, replay_id):
         return db.session.query(Replay).get(replay_id)
 
-    def get_number_of_replays_from(username):
+    def get_number_of_replays_from(self, username):
         return db.session.query(func.count(ReplayStats.username == username)).scalar()
 
-    def get_number_of_wins_from(username):
+    def get_number_of_wins_from(self, username):
         return db.session.query(func.count(and_(ReplayStats.username == username, ReplayStats.winner == True))).scalar()
 
-    def get_all_replays_from(search_filter):
+    def get_all_replays_from(self, search_filter):
         filters = [
             ReplayStats.username == search_filter.username,
             ReplayStats.eliminations >= search_filter.min_kills,

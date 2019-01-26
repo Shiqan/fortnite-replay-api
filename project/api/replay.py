@@ -3,12 +3,13 @@ from ray import Reader
 
 from project.api.logging import logger
 from project.api.models import Filter, Replay
-from project.api.storage import Storage as db
+from project.api.storage_service import StorageService
+from project.api.storage_provider import StorageProvider
 
 replay_blueprint = Blueprint('replay', __name__)
+db = StorageService(StorageProvider())
 
-
-@replay_blueprint.route('/replay/upload/', methods=['POST'])
+@replay_blueprint.route('/replays/upload/', methods=['POST'])
 def parse_replay():
     logger.info('parse_replay()')
     response_object = {
@@ -17,6 +18,7 @@ def parse_replay():
 
     username = request.form.get('username', None)
     files = request.files.getlist('data_file')
+
     if not files or not username:
         response_object['message'] = 'Invalid request!'
         response_object['status'] = 'failed'
@@ -108,7 +110,7 @@ def get_replay(replay_id):
     return jsonify(response_object)
 
 
-@replay_blueprint.route('/ping/', methods=['GET'])
+@replay_blueprint.route('/replays/ping/', methods=['GET'])
 def ping():
     return jsonify({
         'status': 'success',
