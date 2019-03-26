@@ -1,0 +1,8 @@
+.git
+__pycache__
+.vscode
+*.pyc
+*.pyo
+*.pyd
+.Python
+env
