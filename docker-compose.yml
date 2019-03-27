@@ -1,18 +1,37 @@
-# Use postgres/example user/password credentials
 version: '3.1'
 
 services:
-
   db:
     image: postgres
     restart: always
+    volumes:
+       - db-data:/var/lib/postgresql/data
     ports: 
       - 5432:5432
     environment:
+      POSGRES_USER: postgres
       POSTGRES_PASSWORD: example
+      POSTGRES_DB: replays
+  
+  api:
+    image: fortapi
+    build:
+      dockerfile: Dockerfile
+      context: .
+    restart: always
+    ports:
+      - 5000:5000
+    environment:
+        APP_SETTINGS: ProductionConfig
+        DATABASE_URL: postgres://postgres:example@db:5432/replays
+    depends_on:
+      - db
 
   adminer:
     image: adminer
     restart: always
     ports:
-      - 8080:8080 
+      - 8080:8080
+
+volumes:
+  db-data:
