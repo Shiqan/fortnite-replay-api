@@ -1,17 +1,13 @@
-version: '3.1'
+version: '3.7'
 
 services:
   db:
     image: postgres
     restart: always
-    volumes:
-       - db-data:/var/lib/postgresql/data
     ports: 
       - 5432:5432
     environment:
-      POSGRES_USER: postgres
-      POSTGRES_PASSWORD: example
-      POSTGRES_DB: replays
+      - POSTGRES_PASSWORD=example
   
   api:
     image: fortapi
@@ -22,8 +18,8 @@ services:
     ports:
       - 5000:5000
     environment:
-        APP_SETTINGS: ProductionConfig
-        DATABASE_URL: postgres://postgres:example@db:5432/replays
+        - APP_SETTINGS=ProductionConfig
+        - DATABASE_URL=postgres://postgres:example@db:5432/postgres
     depends_on:
       - db
 
@@ -32,6 +28,3 @@ services:
     restart: always
     ports:
       - 8080:8080
-
-volumes:
-  db-data:
